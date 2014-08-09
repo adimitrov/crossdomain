@@ -31,8 +31,6 @@ OptionParser.new do |opts|
   opts.parse!
 end
 
-raise RuntimeError.new "--policy-path does not exist at `#{options[:xml_path]}`" unless File.exists? options[:xml_path]
-
 File.tap { |f| require f.expand_path(f.join(f.dirname(__FILE__),'..', 'lib', 'crossdomain.rb')) }
 Crossdomain::Config.load options
 

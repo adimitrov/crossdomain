@@ -6,7 +6,11 @@ module Crossdomain
     CROSSDOMAIN_SCHEMA_FILE = '/Users/alex/Sites/Social/crossdomain/vendor/PolicyFile.xsd'
     def validate!(xml_path)
 
-      xml = File.read(xml_path)
+      begin
+        xml = File.read(xml_path)
+      rescue Errno::ENOENT
+        return false
+      end
       doc = Nokogiri::XML(xml)
       return false if doc.errors.size > 0
 
