@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+# encoding: utf-8
+
+require 'optparse'
+require 'bundler/setup'
+
+
+options = {
+  host: '0.0.0.0', port: '843', xml_path: File.join(Dir.pwd, 'crossdomain.xml')
+}
+
+
+OptionParser.new do |opts|
+  opts.on '-h', '--help', 'Display this screen' do
+    puts opts
+    exit
+  end
+
+  opts.on '-p', '--port PORT', "Port to bind to (Default: 843)." do |k|
+    options[:app_key] = k
+  end
+
+  opts.on '-H', '--host HOST', "Address to bind to (Default: 0.0.0.0)" do |k|
+    options[:secret] = k
+  end
+
+  opts.on '-x', '--policy-path PATH', 'crossdomain.xml policy file path (Default: `pwd` + /crossdomain.xml)' do |h|
+    options[:xml_path] = h
+  end
+
+  opts.parse!
+end
+
+raise RuntimeError.new "--policy-path does not exist at `#{options[:xml_path]}`" unless File.exists? options[:xml_path]
+
+File.tap { |f| require f.expand_path(f.join(f.dirname(__FILE__),'..', 'lib', 'crossdomain.rb')) }
+Crossdomain::Config.load options
+
+puts "\n"
+puts "\n"
+
+puts "Running Crossdomain v.#{Crossdomain::VERSION}"
+puts "\n"
+
+Crossdomain::Service.start
